@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <meta name="dscription" content="説明文">
+    <link rel="stylesheet" href="./aseets/css/style.css">
+    <style>
+        canvas {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            opacity:50%
+        }
+    </style>
+</head>
+
+<body class="news-body">
+
+    <header>
+        <section class="header-area">
+            <div class="header-l">
+                <a class="header-title" href="./index.html">SITE</a>
+            </div>
+            <div class="header-r">
+                <ul class="header-r-menu-g">
+                    <li class="header-r-menu-i"><a class="header-r-nemu-link" href="./artworks.html">ARTWORKS</a></li>
+                    <li class="header-r-menu-i"><a class="header-r-nemu-link" href="./news.html">NEWS</a></li>
+                    <li class="header-r-menu-i"><a class="header-r-nemu-link" href="./contact.html">CONTACT</a></li>
+                </ul>
+            </div>
+        </section>
+        <div class="header-btn-container">
+            <div class="header-btn">
+                <div class="header-btn-line-1"></div>
+                <p class="header-btn-text-1">-</p>
+                <p class="header-btn-text-2">+</p>
+            </div>
+        </div>
+        <div class="header-back"></div>
+    </header>
+
+    
+
+    <canvas></canvas>
+
+    <script src="./aseets/js/perlin.js"></script>
+    <script>
+
+        let stageW = 0;
+        let stageH = 0;
+
+        const canvas = document.querySelector("canvas");
+        const context = canvas.getContext("2d");
+
+        noise.seed(Math.random());
+
+        resize();
+        tick();
+        window.addEventListener('resize', resize);
+
+        function tick() {
+            requestAnimationFrame(tick);
+            const time = Date.now() / 4000;
+            draw(time);
+        }
+
+        function draw(time) {
+            context.clearRect(0, 0, stageW, stageH);
+            context.lineWidth = 1;
+
+            const amplitude = stageH / 2;
+            const lineNum = 200;
+            const segmentNum = 150;
+
+            [...new Array(lineNum).keys()].forEach(j => {
+                const coefficient = 50 + j;
+
+                context.beginPath();
+
+                const h = Math.round(j / lineNum * 60)+200;//色相
+                const s = 100;//彩度
+                const l = Math.round(j / lineNum * 75)+25;//明度
+                context.strokeStyle = `hsl(${h},${s}%,${l}%)`;
+                
+
+                [...Array(segmentNum).keys()].forEach(i => {
+
+                    const x = i / (segmentNum - 1) * stageW;
+
+                    const px = i / coefficient;
+                    const py = (j / 50 + time);
+
+                    const y = amplitude * noise.perlin2(px, py) + stageH / 2;
+
+                    if (i === 0) {
+                        context.moveTo(x, y);
+                    } else {
+                        context.lineTo(x, y);
+                    }
+                });
+                context.stroke();
+            });
+        }
+
+        function resize() {
+            stageW = innerWidth * devicePixelRatio;
+            stageH = innerHeight * devicePixelRatio;
+
+            canvas.width = stageW;
+            canvas.height = stageH;
+        }
+
+
+
+    </script>
+
+    <main class="news-main">
+
+        <div class="news-p">
+            <!--ニュース記事部分-->
+            <div class="news-p-l">
+                <div class="news-p-article-container">
+                    <div class="news-p-article">
+                        <img class="news-p-img" src="./aseets/img/graphic-design-02.png">
+                        <h2 class="news-p-number">2022/01/01</h2>
+                        <h1 class="news-p-title">デザインの説明</h1>
+                        <p class="news-p-text">
+                            デザインを決めました。全体的にモノトーンな色遣いにし統一感を出そうとしました。
+                            コンテンツのバランスはポートフォリオとしての役割を持ったサイトなので文字を少なめに画像を多め（大きめ）にし、画像に注目してもらえるようにしました。
+                            カルーセルは勿論の事、各コンテンツにスクロールイベントを実装し、動きのある表現を出来るだけ多く取り入れました。
+                            また、ユーザーが操作したときに何かしらの反応がある方がわかりやすく楽しいと感じてもらえるであろうことから、リンクのある部分にホバーイベントを実装しています。
+                            一方であまりにも動きが忙しい・長いとかえってサイト全体が見にくくなると感じたので、それぞれ１秒以内を目安に制作しました。
+                        </p>
+                    </div>
+                    <div class="news-p-article">
+                        <img class="news-p-img" src="./aseets/img/ani-samne.png">
+                        <h2 class="news-p-number">2022/01/01</h2>
+                        <h1 class="news-p-title">カルーセルスライダー</h1>
+                        <p class="news-p-text">
+                            カルーセルスライダーの実装。今回の取り組みの最も時間を使った部分であるカルーセルスライダー。
+                            透過率を変化させているものや、leftなど座標を変化させているもの、恐らく最もメジャーな横並び表示を左右に移動させるものなど、色々な表示方法を取り入れたものを制作しました。
+                            また表示サイズに関しても画面全体を一枚が覆いつくすものや複数の画像を表示しているものなどがあります。
+                            今回の取り組みで最も色々なjavascriptのスキルを学ぶことになった機能でした。
+                            特にカルーセルをレスポンシブ対応させる部分と画像が操作によって変化する処理にはかなり悩まされました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!--ニュースメニュー-->
+            <div class="news-p-r">
+                <div class="news-p-r-container">
+                    <li class="news-p-menu-i news-p-menu-i-top">
+                        <h1 class="news-p-menu-text">デザインの説明</h1>
+                        <h1 class="news-p-menu-text-hidden">デザインの説明</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">カルーセルスライダー</h1>
+                        <h1 class="news-p-menu-text-hidden">カルーセルスライダー</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-03</h1>
+                        <h1 class="news-p-menu-text-hidden">title-03</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-04</h1>
+                        <h1 class="news-p-menu-text-hidden">title-04</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-05</h1>
+                        <h1 class="news-p-menu-text-hidden">title-05</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-06</h1>
+                        <h1 class="news-p-menu-text-hidden">title-06</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-07</h1>
+                        <h1 class="news-p-menu-text-hidden">title-07</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-08</h1>
+                        <h1 class="news-p-menu-text-hidden">title-08</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-09</h1>
+                        <h1 class="news-p-menu-text-hidden">title-09</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                    <li class="news-p-menu-i">
+                        <h1 class="news-p-menu-text">title-10</h1>
+                        <h1 class="news-p-menu-text-hidden">title-010</h1>
+                        <div class="news-p-menu-line"></div>
+                    </li>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="./aseets/js/jquery-3.6.0.min.js"></script>
+    <script src="./aseets/js/app.js"></script>
+</body>
+
+</html>
